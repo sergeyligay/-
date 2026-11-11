@@ -1,0 +1,67 @@
+create table students (
+	student_id serial primary key,
+	full_name varchar(100) not null,
+	email varchar(150) not null unique,
+	birth_date date,
+	enrollment_date date default current_date
+);
+
+create table courses(
+	course_id serial primary key,
+	course_name varchar(100) not null,
+	teacher_name varchar(100) not null,
+	credits integer not null check (credits > 0)
+);
+
+create table grades (
+	grade_id serial primary key,
+	student_id integer not null references students(student_id),
+	course_id integer not null references courses(course_id),
+	grade integer not null check (grade between 0 and 100),
+	unique (student_id, course_id)
+);
+
+insert into courses (course_name, teacher_name, credits)
+values 
+	('Python', 'Sergey Lee', 3),
+	('Databases', 'Kate Shin', 4),
+	('Algorithms', 'Igor Nam', 5);
+
+insert into students (full_name, email, birth_date)
+values 
+	('Elena Ligay', 'elena@mail.com', '2007-05-15'),
+	('Alex Ten', 'alex@mail.com', '2006-02-17'),
+	('Daniel Kim', 'daniel@mail.com', '2008-10-20');
+
+insert into grades (student_id, course_id, grade)
+values 
+	(1, 1, 90),
+	(1, 2, 85),
+	(2, 1, 87),
+	(3, 3, 96);
+
+update students 
+set email = 'elena.new@mail.com'
+where email = 'elena@mail.com';
+
+update students 
+set birth_date = '2005-09-10'
+where email = 'alex@mail.com';
+
+delete from grades 
+where student_id = 3;
+delete from students 
+where student_id = 3;
+
+select *
+from students;
+
+select 
+	s.full_name,
+	c.course_name,
+	g.grade
+from grades g 
+join students s
+	on s.student_id = g.student_id
+join courses c
+	on c.course_id = g.course_id;
